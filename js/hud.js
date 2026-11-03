@@ -65,8 +65,8 @@
     }
   }
 
-  /* --- ability icons (8x8 pixel art) --- */
-  const ICONS = {
+  /* --- ability icons (8x8 base, optionally with a corner arrow) --- */
+  const ICON_ART = {
     free: [
       '....##..',
       '...##...',
@@ -80,8 +80,8 @@
     guard: [
       '.######.',
       '########',
-      '##....##',
-      '##....##',
+      '########',
+      '########',
       '.######.',
       '..####..',
       '...##...',
@@ -96,20 +96,75 @@
       '........',
       '........',
       '........'
+    ],
+    defUp: [
+      '.######.',
+      '########',
+      '########',
+      '########',
+      '.######.',
+      '..####..',
+      '...##...',
+      '........'
+    ],
+    atkUp: [
+      '...##...',
+      '...##...',
+      '...##...',
+      '...##...',
+      '...##...',
+      '.######.',
+      '...##...',
+      '...#....'
+    ],
+    spdUp: [
+      '....##..',
+      '....##..',
+      '...##...',
+      '..###...',
+      '.#.##...',
+      '..#.....',
+      '.#.#....',
+      '#...#...'
+    ],
+    spdDown: [
+      '....##..',
+      '....##..',
+      '...##...',
+      '..###...',
+      '.#.##...',
+      '..#.....',
+      '.#.#....',
+      '#...#...'
     ]
   };
 
+  const ARROW_UP = ['.##.', '.###', '.##.', '.##.'];
+  const ARROW_DOWN = ['.##.', '.##.', '.###', '.##.'];
+
+  function pattern(ctx, pat, x, y, color) {
+    ctx.fillStyle = color;
+    const px = Math.round(x), py = Math.round(y);
+    for (let r = 0; r < pat.length; r++) {
+      for (let c = 0; c < pat[r].length; c++) {
+        if (pat[r][c] === '#') ctx.fillRect(px + c, py + r, 1, 1);
+      }
+    }
+  }
+
   N.Icon = {
     draw(ctx, kind, x, y, color) {
-      const pat = ICONS[kind];
+      const pat = ICON_ART[kind];
+      if (pat) pattern(ctx, pat, x, y, color);
+    },
+
+    /** 10x10 buff badge: 8x8 art + coloured corner arrow */
+    drawBuff(ctx, kind, x, y) {
+      const pat = ICON_ART[kind];
       if (!pat) return;
-      ctx.fillStyle = color;
-      const px = Math.round(x), py = Math.round(y);
-      for (let r = 0; r < pat.length; r++) {
-        for (let c = 0; c < pat[r].length; c++) {
-          if (pat[r][c] === '#') ctx.fillRect(px + c, py + r, 1, 1);
-        }
-      }
+      pattern(ctx, pat, x, y + 2, '#dfe9ff');
+      const down = kind === 'spdDown';
+      pattern(ctx, down ? ARROW_DOWN : ARROW_UP, x + 7, y + (down ? 5 : 0), down ? '#ff5f6d' : '#5fb8ff');
     }
   };
 
@@ -137,10 +192,22 @@
     if (flip) ctx.fillRect(bx + 1 + iw - fw, y + 1, fw, H - 2);
     else ctx.fillRect(bx + 1, y + 1, fw, H - 2);
 
+    // four charges
+    ctx.fillStyle = '#07080f';
+    for (let i = 1; i < 4; i++) ctx.fillRect(bx + Math.round((W * i) / 4), y, 1, H);
+
     if (f.gaugeReady) {
       T(ctx, g.name, flip ? bx - 7 : bx + W + 7, y - 2, {
         color: col, shadow: '#000', align: flip ? 'right' : 'left'
       });
+    }
+  }
+
+  function buffRow(ctx, f, x, y, flip) {
+    let i = 0;
+    for (const b of f.buffs) {
+      N.Icon.drawBuff(ctx, b.kind, flip ? x - 10 - i * 11 : x + i * 11, y);
+      if (++i >= 4) break;
     }
   }
 
@@ -149,15 +216,15 @@
       const p1 = G.p1, p2 = G.p2;
       if (!p1 || !p2) return;
 
-      const BW = 142, BH = 9, BY = 19;
+      const BW = 142, BH = 9, BY = 20;
 
       // names
       T(ctx, p1.def.name, 11, 2, { color: '#dfe9ff', shadow: '#000' });
       T(ctx, p2.def.name, 373, 2, { color: '#dfe9ff', shadow: '#000', align: 'right' });
 
-      // tags
-      T(ctx, p1.def.tag, 11, 10, { color: '#5b6b8c', scale: 1, shadow: '#000' });
-      T(ctx, p2.def.tag, 373, 10, { color: '#5b6b8c', scale: 1, shadow: '#000', align: 'right' });
+      // buff badges, just above the health bar
+      buffRow(ctx, p1, 11, 9, false);
+      buffRow(ctx, p2, 373, 9, true);
 
       // health
       healthBar(ctx, 10, BY, BW, BH, p1.health / p1.maxHealth, G.ghost[0] / p1.maxHealth, false, p1.def.pal.body);
@@ -195,11 +262,11 @@
       // FINAL badge
       if (p1.finalReady) {
         const blink = Math.floor(performance.now() / 150) % 2 === 0;
-        T(ctx, 'FINAL', 152, 8, { color: blink ? '#fff27a' : '#ff4fd8', shadow: '#000', align: 'right' });
+        T(ctx, 'FINAL', 152, 1, { color: blink ? '#fff27a' : '#ff4fd8', shadow: '#000', align: 'right' });
       }
       if (p2.finalReady) {
         const blink = Math.floor(performance.now() / 150) % 2 === 0;
-        T(ctx, 'FINAL', N.W - 152, 8, { color: blink ? '#fff27a' : '#ff4fd8', shadow: '#000' });
+        T(ctx, 'FINAL', N.W - 152, 1, { color: blink ? '#fff27a' : '#ff4fd8', shadow: '#000' });
       }
 
       // combo

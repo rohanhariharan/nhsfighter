@@ -147,7 +147,7 @@
           mv = Object.assign({}, m, { knockdown: true, kbUp: -3.4, damage: m.damage * 2 });
         }
 
-        const dmg = Math.max(1, Math.round((mv.damage || 0) * atk.def.power));
+        const dmg = Math.max(1, Math.round((mv.damage || 0) * atk.def.power * (atk.atkMul || 1)));
         def.receive(atk, mv, dmg, w);
       }
     }
@@ -676,22 +676,22 @@
       drawStats(198, 142, 176, c2, 'CPU', '#c77dff', true, false);
     }
 
-    T(ctx, 'ENTER / Q / U  CONFIRM', W / 2, 204, {
+    T(ctx, 'ENTER / Q / U  CONFIRM', W / 2, 206, {
       color: '#3d4a63', align: 'center'
     });
   }
 
   const ABILITY_TEXT = {
-    free: 'NEXT SPECIAL IS FREE',
-    guard: 'ABSORBS ONE HIT',
-    dodge: 'SLIPS ONE ATTACK'
+    free: 'FREE SPECIAL + DOUBLE JUMP',
+    guard: 'SPECIAL GRANTS ATK+DEF',
+    dodge: '4 DODGES, FAST WHEN FULL'
   };
 
   function drawStats(x, y, w, ch, label, color, locked, hide) {
-    rect(x, y, w, 54, '#0b0f1e');
+    rect(x, y, w, 60, '#0b0f1e');
     ctx.strokeStyle = '#1b2036';
     ctx.lineWidth = 1;
-    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, 53);
+    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, 59);
 
     T(ctx, label, x + 5, y + 4, { color, shadow: '#000' });
     T(ctx, hide ? '???' : ch.name, x + w - 5, y + 4, { color: '#dfe9ff', align: 'right', shadow: '#000' });
@@ -714,9 +714,9 @@
 
     const g = ch.gauge;
     if (g) {
-      N.Icon.draw(ctx, g.kind, x + 5, y + 43, g.color);
-      const nw = T(ctx, g.name, x + 17, y + 44, { color: g.color, shadow: '#000' });
-      T(ctx, ABILITY_TEXT[g.kind] || '', x + 17 + nw + 8, y + 44, { color: '#8fa0c4' });
+      N.Icon.draw(ctx, g.kind, x + 5, y + 40, g.color);
+      T(ctx, g.name, x + 17, y + 41, { color: g.color, shadow: '#000' });
+      T(ctx, ABILITY_TEXT[g.kind] || '', x + 5, y + 51, { color: '#8fa0c4' });
     }
   }
 

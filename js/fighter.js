@@ -58,6 +58,11 @@
       this.gauge = 0;
       this.gaugeReady = false;
       this.dodgeT = 0;
+      this.buffs = [];
+      this.atkMul = 1;
+      this.defMul = 1;
+      this.speedMul = 1;
+      this.didDoubleJump = false;
       this.state = 'idle';
       this.stateTime = 0;
       this.animTime = (this.index || 0) * 41;
@@ -142,13 +147,20 @@
         this.meter -= m.cost;
       }
       this.startAttack(id);
+
+      // AARNAV — his own special grants ATK+DEF
+      if (id === this.def.special && this.def.specialBuff) {
+        const sb = this.def.specialBuff;
+        if (sb.atk) this.addBuff('atkUp', sb.frames);
+        if (sb.def) this.addBuff('defUp', sb.frames);
+      }
       return true;
     }
 
     jump(dir) {
       if (!this.grounded()) return;
       this.vy = -this.def.jump;
-      if (dir) this.vx = dir * this.def.speed * 1.15;
+      if (dir) this.vx = dir * this.def.speed * (this.speedMul || 1) * 1.15;
       this.setState('jump');
       N.Audio.sfx('jump');
     }
@@ -216,15 +228,16 @@
 
       const gk = this.def.gauge && this.def.gauge.kind;
 
-      // ROHAN — auto-dodge: slips the hit entirely
+      // ROHAN — auto-dodge: slips the hit entirely, burns one of four charges
       if (gk === 'dodge' && this.gaugeReady && !this.isBlocking()) {
-        this.gauge = 0;
-        this.gaugeReady = false;
+        this.gauge = Math.max(0, (Math.floor(this.gauge / 25) - 1) * 25);
+        this.gaugeReady = this.gauge >= 25;
         this.invuln = Math.max(this.invuln, 26);
         this.dodgeT = 22;
         this.vx = -this.facing * 1.7;
         this.hitstop = 4;
         attacker.hitstop = 4;
+        if (this.gauge <= 0) this.addBuff('spdDown', 300);
         world.sparks.push({ x: this.x, y: this.y - 30, kind: 'block', t: 0, life: 16 });
         N.Audio.sfx('jump');
         return 'dodge';
@@ -245,6 +258,9 @@
       }
 
       const blocked = this.isBlocking();
+
+      // defence buff
+      if (this.defMul !== 1) damage = Math.max(1, Math.round(damage * this.defMul));
       world.shake = Math.max(world.shake, blocked ? 1.6 : 2.6 + Math.min(3, damage * 0.18));
 
       if (blocked) {
@@ -315,6 +331,23 @@
       return blocked ? 'block' : 'hit';
     }
 
+    addBuff(kind, frames) {
+      const b = this.buffs.find((x) => x.kind === kind);
+      if (b) b.t = Math.max(b.t, frames);
+      else this.buffs.push({ kind, t: frames });
+      this.refreshMuls();
+    }
+
+    refreshMuls() {
+      this.atkMul = this.hasBuff('atkUp') ? 1.5 : 1;
+      this.defMul = this.hasBuff('defUp') ? 0.5 : 1;
+      this.speedMul = this.hasBuff('spdDown') ? 0.6 : (this.hasBuff('spdUp') ? 1.5 : 1);
+    }
+
+    hasBuff(kind) {
+      return this.buffs.some((b) => b.kind === kind);
+    }
+
     /* --- per-frame ----------------------------------------- */
     update(input, opp, world) {
       this.animTime++;
@@ -327,11 +360,22 @@
       this.meter = Math.min(100, this.meter + 0.045);
 
       // character gauge: trickles up, triggers when full
+      const gk = this.def.gauge && this.def.gauge.kind;
       if (this.def.gauge) {
         if (this.gauge < 100) this.gauge = Math.min(100, this.gauge + this.def.gauge.rate);
-        this.gaugeReady = this.gauge >= 100;
+        this.gaugeReady = this.gauge >= (gk === 'dodge' ? 25 : 100);
       }
       if (this.dodgeT > 0) this.dodgeT--;
+
+      // buff timers
+      for (let i = this.buffs.length - 1; i >= 0; i--) {
+        if (--this.buffs[i].t <= 0) this.buffs.splice(i, 1);
+      }
+
+      // Rohan is quick while his meter is stocked
+      if (gk === 'dodge' && this.gauge >= 100) this.addBuff('spdUp', 6);
+
+      this.refreshMuls();
 
       if (this.hitstop > 0) {
         this.hitstop--;
@@ -378,6 +422,7 @@
     }
 
     onLand() {
+      this.didDoubleJump = false;
       if (this.state === 'attack' && this.move && this.move.air) {
         this.move = null;
         this.setState('land');
@@ -454,7 +499,7 @@
     const dir = (inp.left ? -1 : 0) + (inp.right ? 1 : 0);
     if (dir === 0) return f.setState('idle');
 
-    f.vx = dir * f.def.speed * (dir === f.facing ? 1 : 0.82);
+    f.vx = dir * f.def.speed * (f.speedMul || 1) * (dir === f.facing ? 1 : 0.82);
     if (dir === f.facing) f.setState('walkF');
     else f.setState('walkB');
   }
@@ -528,6 +573,13 @@
       if (dir !== 0) {
         f.vx += dir * 0.09;
         f.vx = clamp(f.vx, -f.def.speed * 1.6, f.def.speed * 1.6);
+      }
+
+      if (inp.up && f.def.doubleJump && f.gaugeReady && !f.didDoubleJump) {
+        f.vy = -f.def.jump * 0.85;
+        f.didDoubleJump = true;
+        N.Audio.sfx('jump');
+        return;
       }
 
       if (inp.punch) return f.startAttack('divePunch');

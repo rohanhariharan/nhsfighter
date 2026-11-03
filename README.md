@@ -62,11 +62,11 @@ Rounds are best of three, 60 seconds each.
 
 ## Roster
 
-| Fighter | Role | Special | Gauge |
+| Fighter | Role | Special | Ability |
 |---|---|---|---|
-| **ADAMYA** | agile — fastest walk, highest jump, light hits | *SHARDS* — two fast projectiles | **FLOW** — next special is free |
-| **AARNAV** | tall reach — longer legs, heavier single hits | *RISE* — invincible rising uppercut | **IRON** — eats one hit, no damage |
-| **ROHAN** | balanced — mid speed, mid range | *RUSH* — armoured charging shoulder | **DODGE** — slips one attack completely |
+| **ADAMYA** | agile — fastest walk, highest jump, light hits | *SHARDS* — two fast projectiles | **FLOW** — while charged: free specials **and** a double jump |
+| **AARNAV** | tall reach — longer legs, heavier single hits | *RISE* — invincible rising uppercut | **IRON** — absorbs one hit, and his special grants **ATK +50% / DEF +50%** for 8s |
+| **ROHAN** | balanced — mid speed, mid range | *RUSH* — armoured charging shoulder | **DODGE** — 4 charges, slips one attack each; +50% speed while stocked, −40% after all four |
 
 | | height | health | speed | jump | power | POW/SPD/RNG |
 |---|---|---|---|---|---|---|
@@ -76,21 +76,21 @@ Rounds are best of three, 60 seconds each.
 
 Best of three rounds, three stages; the CPU picks any fighter at Easy / Normal / Hard.
 
-### Gauges
+### Abilities
 
-Under each fighter's meter is a second, thinner bar — their personal gauge. It
-fills on its own over roughly fifteen seconds and then triggers **once** for
-free, then resets:
+Under each fighter's meter is a thinner, four-segment bar — their personal
+gauge. Buffs appear as badges above the health bar (blue arrow = up, red arrow =
+down).
 
-- **FLOW** (Adamya) — the next special costs nothing, meter untouched
-- **IRON** (Aarnav) — absorbs one clean hit entirely, no damage or hitstun
-- **DODGE** (Rohan) — slips the next attack, going briefly invulnerable
-
-The gauge only fires on an unblocked hit, so you can't waste IRON or DODGE while
-already holding back.
-
-Each gauge has an icon beside its bar (and on the character card): a **bolt** for
-FLOW, a **shield** for IRON, a **chevron** for DODGE.
+- **FLOW** (Adamya) — while the gauge is full, specials cost no meter and he gets
+  one extra jump in the air. Spend the meter on a special and you give up the
+  double jump until it refills.
+- **IRON** (Aarnav) — a full gauge absorbs one clean hit for zero damage. On top
+  of that, every *RISE* he lands buffs him: **ATK +50%** and **DEF +50%** (half
+  damage taken) for 8 seconds.
+- **DODGE** (Rohan) — four charges. Any unblocked hit is slipped entirely (i-frames
+  + phase-out), burning one charge. While stocked at 4 he moves **+50%** faster;
+  burn all four and he's stuck at **−40%** speed for five seconds.
 
 ---
 
