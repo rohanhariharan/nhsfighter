@@ -65,26 +65,80 @@
     }
   }
 
-  function gaugeBar(ctx, x, y, w, h, f, flip) {
+  /* --- ability icons (8x8 pixel art) --- */
+  const ICONS = {
+    free: [
+      '....##..',
+      '...##...',
+      '..##....',
+      '.######.',
+      '....##..',
+      '...##...',
+      '..##....',
+      '........'
+    ],
+    guard: [
+      '.######.',
+      '########',
+      '##....##',
+      '##....##',
+      '.######.',
+      '..####..',
+      '...##...',
+      '........'
+    ],
+    dodge: [
+      '..##....',
+      '....##..',
+      '......##',
+      '....##..',
+      '..##....',
+      '........',
+      '........',
+      '........'
+    ]
+  };
+
+  N.Icon = {
+    draw(ctx, kind, x, y, color) {
+      const pat = ICONS[kind];
+      if (!pat) return;
+      ctx.fillStyle = color;
+      const px = Math.round(x), py = Math.round(y);
+      for (let r = 0; r < pat.length; r++) {
+        for (let c = 0; c < pat[r].length; c++) {
+          if (pat[r][c] === '#') ctx.fillRect(px + c, py + r, 1, 1);
+        }
+      }
+    }
+  };
+
+  function gaugeBar(ctx, edgeX, y, f, flip) {
     const g = f.def.gauge;
     if (!g) return;
 
-    ctx.fillStyle = '#07080f';
-    ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
-    ctx.fillStyle = '#0e1424';
-    ctx.fillRect(x, y, w, h);
+    const IW = 8, GAP = 3, W = 82, H = 3;
+    const ix = flip ? edgeX - IW : edgeX;
+    const bx = flip ? ix - GAP - W : edgeX + IW + GAP;
 
-    const iw = w - 2;
-    const fw = Math.round(iw * Math.min(1, f.gauge / 100));
     const flash = f.gaugeReady && Math.floor(performance.now() / 130) % 2 === 0;
     const col = flash ? '#fff27a' : g.color;
 
+    N.Icon.draw(ctx, g.kind, ix, y - 3, col);
+
+    ctx.fillStyle = '#07080f';
+    ctx.fillRect(bx - 1, y - 1, W + 2, H + 2);
+    ctx.fillStyle = '#0e1424';
+    ctx.fillRect(bx, y, W, H);
+
+    const iw = W - 2;
+    const fw = Math.round(iw * Math.min(1, f.gauge / 100));
     ctx.fillStyle = col;
-    if (flip) ctx.fillRect(x + 1 + iw - fw, y + 1, fw, h - 2);
-    else ctx.fillRect(x + 1, y + 1, fw, h - 2);
+    if (flip) ctx.fillRect(bx + 1 + iw - fw, y + 1, fw, H - 2);
+    else ctx.fillRect(bx + 1, y + 1, fw, H - 2);
 
     if (f.gaugeReady) {
-      T(ctx, g.name, flip ? x - 7 : x + w + 7, y - 2, {
+      T(ctx, g.name, flip ? bx - 7 : bx + W + 7, y - 2, {
         color: col, shadow: '#000', align: flip ? 'right' : 'left'
       });
     }
@@ -114,8 +168,8 @@
       meterBar(ctx, N.W - 10 - 96, BY + BH + 4, 96, 4, p2.meter / 100, true, p2.meter >= 100);
 
       // character gauges
-      gaugeBar(ctx, 10, BY + BH + 10, 96, 3, p1, false);
-      gaugeBar(ctx, N.W - 10 - 96, BY + BH + 10, 96, 3, p2, true);
+      gaugeBar(ctx, 10, BY + BH + 12, p1, false);
+      gaugeBar(ctx, N.W - 10, BY + BH + 12, p2, true);
 
       // round pips, flanking the timer
       for (let i = 0; i < N.ROUNDS_TO_WIN; i++) {

@@ -618,7 +618,7 @@
     const cw = count === 1 ? 132 : 84;
     const gap = 4;
     const startX = Math.round((W - (count * cw + (count - 1) * gap)) / 2);
-    const cy = 30, ch = 116;
+    const cy = 26, ch = 112;
 
     for (let i = 0; i < N.CHARS.length; i++) {
       const c = N.CHARS[i];
@@ -668,12 +668,12 @@
 
     // stat panels
     const p1c = N.CHARS[G.sel.p1];
-    drawStats(14, 152, 176, p1c, 'P1', '#59d7ff', G.sel.lock1);
+    drawStats(14, 142, 176, p1c, 'P1', '#59d7ff', G.sel.lock1);
     if (G.mode === '2p') {
-      drawStats(198, 152, 176, N.CHARS[G.sel.p2], 'P2', '#c77dff', G.sel.lock2);
+      drawStats(198, 142, 176, N.CHARS[G.sel.p2], 'P2', '#c77dff', G.sel.lock2);
     } else {
       const c2 = N.CHARS[G.sel.p2];
-      drawStats(198, 152, 176, c2, 'CPU', '#c77dff', true, false);
+      drawStats(198, 142, 176, c2, 'CPU', '#c77dff', true, false);
     }
 
     T(ctx, 'ENTER / Q / U  CONFIRM', W / 2, 204, {
@@ -681,11 +681,17 @@
     });
   }
 
+  const ABILITY_TEXT = {
+    free: 'NEXT SPECIAL IS FREE',
+    guard: 'ABSORBS ONE HIT',
+    dodge: 'SLIPS ONE ATTACK'
+  };
+
   function drawStats(x, y, w, ch, label, color, locked, hide) {
-    rect(x, y, w, 44, '#0b0f1e');
+    rect(x, y, w, 54, '#0b0f1e');
     ctx.strokeStyle = '#1b2036';
     ctx.lineWidth = 1;
-    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, 43);
+    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, 53);
 
     T(ctx, label, x + 5, y + 4, { color, shadow: '#000' });
     T(ctx, hide ? '???' : ch.name, x + w - 5, y + 4, { color: '#dfe9ff', align: 'right', shadow: '#000' });
@@ -695,15 +701,23 @@
     const rows = ['POW', 'SPD', 'RNG'];
     const keys = ['POW', 'SPD', 'RNG'];
     for (let i = 0; i < 3; i++) {
-      const yy = y + 16 + i * 9;
+      const yy = y + 14 + i * 9;
       T(ctx, rows[i], x + 5, yy, { color: '#5b6b8c' });
       const v = ch.stats[keys[i]] || 1;
       for (let p = 0; p < 5; p++) {
         rect(x + 34 + p * 9, yy, 7, 5, p < v ? color : '#1b2036');
       }
     }
-    T(ctx, ch.tag, x + 96, y + 16, { color: '#8fa0c4' });
-    T(ctx, ch.blurb, x + 96, y + 27, { color: '#4a5878' });
+
+    T(ctx, ch.tag, x + 96, y + 9, { color: '#8fa0c4' });
+    T(ctx, ch.blurb, x + 96, y + 18, { color: '#4a5878' });
+
+    const g = ch.gauge;
+    if (g) {
+      N.Icon.draw(ctx, g.kind, x + 5, y + 43, g.color);
+      const nw = T(ctx, g.name, x + 17, y + 44, { color: g.color, shadow: '#000' });
+      T(ctx, ABILITY_TEXT[g.kind] || '', x + 17 + nw + 8, y + 44, { color: '#8fa0c4' });
+    }
   }
 
   /* ------------------------------------------------------------

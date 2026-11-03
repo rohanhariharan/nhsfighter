@@ -89,6 +89,9 @@ free, then resets:
 The gauge only fires on an unblocked hit, so you can't waste IRON or DODGE while
 already holding back.
 
+Each gauge has an icon beside its bar (and on the character card): a **bolt** for
+FLOW, a **shield** for IRON, a **chevron** for DODGE.
+
 ---
 
 ## How it is built
