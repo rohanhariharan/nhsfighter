@@ -148,11 +148,15 @@
       }
       this.startAttack(id);
 
-      // AARNAV — his own special grants ATK+DEF
+      // AARNAV — his own special grants ATK+DEF, scaled by the gauge
       if (id === this.def.special && this.def.specialBuff) {
         const sb = this.def.specialBuff;
-        if (sb.atk) this.addBuff('atkUp', sb.frames);
-        if (sb.def) this.addBuff('defUp', sb.frames);
+        const fill = Math.max(0, Math.min(1, this.gauge / 100));
+        const mag = (sb.max || 0.5) * fill;
+        if (mag > 0.02) {
+          this.addBuff('atkUp', sb.frames, mag);
+          this.addBuff('defUp', sb.frames, mag);
+        }
       }
       return true;
     }
@@ -331,16 +335,23 @@
       return blocked ? 'block' : 'hit';
     }
 
-    addBuff(kind, frames) {
+    addBuff(kind, frames, mag) {
+      const m = mag === undefined ? 0.5 : mag;
       const b = this.buffs.find((x) => x.kind === kind);
-      if (b) b.t = Math.max(b.t, frames);
-      else this.buffs.push({ kind, t: frames });
+      if (b) {
+        b.t = Math.max(b.t, frames);
+        b.mag = Math.max(b.mag, m);
+      } else {
+        this.buffs.push({ kind, t: frames, mag: m });
+      }
       this.refreshMuls();
     }
 
     refreshMuls() {
-      this.atkMul = this.hasBuff('atkUp') ? 1.5 : 1;
-      this.defMul = this.hasBuff('defUp') ? 0.5 : 1;
+      const atk = this.buffs.find((b) => b.kind === 'atkUp');
+      const def = this.buffs.find((b) => b.kind === 'defUp');
+      this.atkMul = atk ? 1 + atk.mag : 1;
+      this.defMul = def ? 1 - def.mag : 1;
       this.speedMul = this.hasBuff('spdDown') ? 0.6 : (this.hasBuff('spdUp') ? 1.5 : 1);
     }
 
@@ -374,6 +385,12 @@
 
       // Rohan is quick while his meter is stocked
       if (gk === 'dodge' && this.gauge >= 100) this.addBuff('spdUp', 6);
+
+      // Adamya is buffed while FLOW is charged
+      if (gk === 'free' && this.gauge >= 100 && this.def.flowBuff) {
+        this.addBuff('atkUp', 6, this.def.flowBuff.atk);
+        this.addBuff('defUp', 6, this.def.flowBuff.def);
+      }
 
       this.refreshMuls();
 

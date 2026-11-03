@@ -64,8 +64,8 @@ Rounds are best of three, 60 seconds each.
 
 | Fighter | Role | Special | Ability |
 |---|---|---|---|
-| **ADAMYA** | agile — fastest walk, highest jump, light hits | *SHARDS* — two fast projectiles | **FLOW** — while charged: free specials **and** a double jump |
-| **AARNAV** | tall reach — longer legs, heavier single hits | *RISE* — invincible rising uppercut | **IRON** — absorbs one hit, and his special grants **ATK +50% / DEF +50%** for 8s |
+| **ADAMYA** | agile — fastest walk, highest jump, light hits | *SHARDS* — two fast projectiles | **FLOW** — while charged: **ATK+30% / DEF+30%**, free specials **and** a double jump |
+| **AARNAV** | tall reach — longer legs, heavier single hits | *RISE* — invincible rising uppercut | **IRON** — absorbs one hit; his special buffs **ATK/DEF scaled by gauge fill**, up to +50% |
 | **ROHAN** | balanced — mid speed, mid range | *RUSH* — armoured charging shoulder | **DODGE** — 4 charges, slips one attack each; +50% speed while stocked, −40% after all four |
 
 | | height | health | speed | jump | power | POW/SPD/RNG |
@@ -82,12 +82,14 @@ Under each fighter's meter is a thinner, four-segment bar — their personal
 gauge. Buffs appear as badges above the health bar (blue arrow = up, red arrow =
 down).
 
-- **FLOW** (Adamya) — while the gauge is full, specials cost no meter and he gets
-  one extra jump in the air. Spend the meter on a special and you give up the
-  double jump until it refills.
-- **IRON** (Aarnav) — a full gauge absorbs one clean hit for zero damage. On top
-  of that, every *RISE* he lands buffs him: **ATK +50%** and **DEF +50%** (half
-  damage taken) for 8 seconds.
+- **FLOW** (Adamya) — while the gauge is full he is buffed: **ATK +30%**,
+  **DEF +30%** (takes 30% less), specials cost no meter, and he gets one extra
+  jump in the air. Spending a special burns the whole charge and takes all of it
+  away until the gauge refills.
+- **IRON** (Aarnav) — a full gauge absorbs one clean hit for zero damage. Every
+  *RISE* also grants an ATK/DEF buff whose size is **proportional to how full the
+  gauge is**: +50%/+50% at a full bar, +25%/+25% at half, and nothing at empty.
+  Lasts 8 seconds, snapshot at the moment he casts.
 - **DODGE** (Rohan) — four charges. Any unblocked hit is slipped entirely (i-frames
   + phase-out), burning one charge. While stocked at 4 he moves **+50%** faster;
   burn all four and he's stuck at **−40%** speed for five seconds.

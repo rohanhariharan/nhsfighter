@@ -154,6 +154,7 @@ window.NHS = window.NHS || {};
       },
       body: { lift: -4, hairTop: 4, hairSide: 2, hairSweep: 0 },
       gauge: { name: 'FLOW', kind: 'free', rate: 0.1, color: '#9cc3e6' },
+      flowBuff: { atk: 0.3, def: 0.3 },
       doubleJump: true,
       stats: { POW: 2, SPD: 5, RNG: 4 },
       blurb: 'QUICK HANDS.'
@@ -177,7 +178,7 @@ window.NHS = window.NHS || {};
       },
       body: { lift: 4, torsoH: 20, headH: 16, hairTop: 4, hairSide: 2, hairSweep: 3 },
       gauge: { name: 'IRON', kind: 'guard', rate: 0.105, color: '#d4665c' },
-      specialBuff: { atk: 1.5, def: 0.5, frames: 480 },
+      specialBuff: { max: 0.5, frames: 480 },
       stats: { POW: 3, SPD: 3, RNG: 5 },
       blurb: 'LONG ARMS.'
     },

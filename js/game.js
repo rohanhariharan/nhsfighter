@@ -682,8 +682,8 @@
   }
 
   const ABILITY_TEXT = {
-    free: 'FREE SPECIAL + DOUBLE JUMP',
-    guard: 'SPECIAL GRANTS ATK+DEF',
+    free: 'ATK+DEF UP + DOUBLE JUMP',
+    guard: 'SPECIAL BUFFS BY GAUGE',
     dodge: '4 DODGES, FAST WHEN FULL'
   };
 
