@@ -153,6 +153,7 @@ window.NHS = window.NHS || {};
         glassesOn: true
       },
       body: { lift: -4, hairTop: 4, hairSide: 2, hairSweep: 0 },
+      gauge: { name: 'FLOW', kind: 'free', rate: 0.1, color: '#9cc3e6' },
       stats: { POW: 2, SPD: 5, RNG: 4 },
       blurb: 'QUICK HANDS.'
     },
@@ -174,8 +175,31 @@ window.NHS = window.NHS || {};
         scribble: '#f2f2f2', string: '#e8e8ea'
       },
       body: { lift: 4, torsoH: 20, headH: 16, hairTop: 4, hairSide: 2, hairSweep: 3 },
+      gauge: { name: 'IRON', kind: 'guard', rate: 0.105, color: '#d4665c' },
       stats: { POW: 3, SPD: 3, RNG: 5 },
       blurb: 'LONG ARMS.'
+    },
+    {
+      id: 'rohan', name: 'ROHAN', tag: 'BALANCED',
+      health: 100, speed: 1.78, jump: 7.4, weight: 0.95, power: 0.98,
+      hurtH: 50,
+      special: 'rush',
+      pal: { body: '#8ea3c4', shade: '#60718e', accent: '#eef1f6', dark: '#161a22', glow: '#b8c6dd' },
+      look: {
+        skin: '#c07b4d', skinDark: '#a4643c',
+        hair: '#191518',
+        shirt: '#2f3b52', shirtDark: '#253044',
+        jeans: '#3a3f4a', jeansDark: '#2c3038',
+        shoe: '#232830',
+        eye: '#191518',
+        glassesOn: false,
+        longSleeve: true,
+        placket: '#eef1f6'
+      },
+      body: { lift: 0, torsoH: 17, headH: 17, hairTop: 5, hairSide: 3, hairSweep: -2 },
+      gauge: { name: 'DODGE', kind: 'dodge', rate: 0.12, color: '#8ea3c4' },
+      stats: { POW: 3, SPD: 4, RNG: 4 },
+      blurb: 'SLIPS THROUGH.'
     }
   ];
 

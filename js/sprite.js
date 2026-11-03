@@ -285,6 +285,14 @@
     /* --- torso --- */
     box(ctx, RX(-B.torsoW / 2 + lean, B.torsoW), T(torsoTop), B.torsoW, B.torsoH, c(C.shirt));
 
+    /* --- open jacket over a shirt --- */
+    if (C.placket) {
+      const ph = Math.round(B.torsoH * 0.55);
+      box(ctx, RX(-2 + lean, 4), T(torsoTop + 1), 4, ph, c(C.placket));
+      box(ctx, RX(-5 + lean, 3), T(torsoTop), 3, 4, c(C.placket));
+      box(ctx, RX(2 + lean, 3), T(torsoTop), 3, 4, c(C.placket));
+    }
+
     /* --- hoodie details --- */
     if (C.hood) {
       box(ctx, RX(-8 + lean, 16), T(torsoTop - 1), 16, 4, c(C.shirtDark));   // hood bunched at the collar
@@ -402,9 +410,17 @@
       const Y = Math.round(f.y);
       const dir = f.facing < 0 ? -1 : 1;
       const cur = current(f);
+      const ghost = f.dodgeT > 0;
+
+      if (ghost) {
+        ctx.save();
+        ctx.globalAlpha = 0.45;
+      }
 
       if (cur.lying) drawLying(ctx, f, X, Y, dir);
       else drawBody(ctx, f, X, Y, dir, cur.pose);
+
+      if (ghost) ctx.restore();
     },
 
     portrait(ctx, def, cx, baseY, scale, frame) {

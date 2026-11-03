@@ -498,8 +498,6 @@
 
     T(ctx, 'FIGHTER', W / 2, y0 + 48, { scale: 3, color: '#fff27a', shadow: '#3a2408', align: 'center' });
 
-    T(ctx, '8-BIT ARENA', W / 2, y0 + 76, { color: '#5b6b8c', align: 'center' });
-
     // menu
     const items = ['1P VS CPU', '2P VERSUS', 'CONTROLS'];
     const my = 138;

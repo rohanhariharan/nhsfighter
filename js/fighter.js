@@ -55,6 +55,9 @@
       this.facing = facing;
       this.health = this.maxHealth;
       this.meter = 40;
+      this.gauge = 0;
+      this.gaugeReady = false;
+      this.dodgeT = 0;
       this.state = 'idle';
       this.stateTime = 0;
       this.animTime = (this.index || 0) * 41;
@@ -124,12 +127,20 @@
       const id = this.def.special;
       const m = N.MOVES[id];
       if (!m) return false;
-      if (this.meter < m.cost) {
-        this.meterFlash = 16;
-        N.Audio.sfx('deny');
-        return true;
+
+      // ADAMYA — the gauge covers the meter cost
+      const free = this.def.gauge && this.def.gauge.kind === 'free' && this.gaugeReady;
+      if (free) {
+        this.gauge = 0;
+        this.gaugeReady = false;
+      } else {
+        if (this.meter < m.cost) {
+          this.meterFlash = 16;
+          N.Audio.sfx('deny');
+          return true;
+        }
+        this.meter -= m.cost;
       }
-      this.meter -= m.cost;
       this.startAttack(id);
       return true;
     }
@@ -202,6 +213,36 @@
     receive(attacker, move, damage, world) {
       if (this.invuln > 0 || this.state === 'ko' || this.ko) return 'miss';
       if (this.state === 'knockdown' || this.state === 'getup') return 'miss';
+
+      const gk = this.def.gauge && this.def.gauge.kind;
+
+      // ROHAN — auto-dodge: slips the hit entirely
+      if (gk === 'dodge' && this.gaugeReady && !this.isBlocking()) {
+        this.gauge = 0;
+        this.gaugeReady = false;
+        this.invuln = Math.max(this.invuln, 26);
+        this.dodgeT = 22;
+        this.vx = -this.facing * 1.7;
+        this.hitstop = 4;
+        attacker.hitstop = 4;
+        world.sparks.push({ x: this.x, y: this.y - 30, kind: 'block', t: 0, life: 16 });
+        N.Audio.sfx('jump');
+        return 'dodge';
+      }
+
+      // AARNAV — auto-guard: eats the hit with no damage
+      if (gk === 'guard' && this.gaugeReady && !this.isBlocking()) {
+        this.gauge = 0;
+        this.gaugeReady = false;
+        this.setState('blockStun');
+        this.hitTimer = 12;
+        this.vx = -this.facing * 1.1;
+        this.hitstop = 3;
+        attacker.hitstop = 3;
+        world.sparks.push({ x: this.x + this.facing * 10, y: this.y - 34, kind: 'block', t: 0, life: 14 });
+        N.Audio.sfx('block');
+        return 'guard';
+      }
 
       const blocked = this.isBlocking();
       world.shake = Math.max(world.shake, blocked ? 1.6 : 2.6 + Math.min(3, damage * 0.18));
@@ -284,6 +325,13 @@
       if (this.comboTimer > 0) { if (--this.comboTimer === 0) this.combo = 0; }
       if (this.meterFlash > 0) this.meterFlash--;
       this.meter = Math.min(100, this.meter + 0.045);
+
+      // character gauge: trickles up, triggers when full
+      if (this.def.gauge) {
+        if (this.gauge < 100) this.gauge = Math.min(100, this.gauge + this.def.gauge.rate);
+        this.gaugeReady = this.gauge >= 100;
+      }
+      if (this.dodgeT > 0) this.dodgeT--;
 
       if (this.hitstop > 0) {
         this.hitstop--;

@@ -65,6 +65,31 @@
     }
   }
 
+  function gaugeBar(ctx, x, y, w, h, f, flip) {
+    const g = f.def.gauge;
+    if (!g) return;
+
+    ctx.fillStyle = '#07080f';
+    ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
+    ctx.fillStyle = '#0e1424';
+    ctx.fillRect(x, y, w, h);
+
+    const iw = w - 2;
+    const fw = Math.round(iw * Math.min(1, f.gauge / 100));
+    const flash = f.gaugeReady && Math.floor(performance.now() / 130) % 2 === 0;
+    const col = flash ? '#fff27a' : g.color;
+
+    ctx.fillStyle = col;
+    if (flip) ctx.fillRect(x + 1 + iw - fw, y + 1, fw, h - 2);
+    else ctx.fillRect(x + 1, y + 1, fw, h - 2);
+
+    if (f.gaugeReady) {
+      T(ctx, g.name, flip ? x - 7 : x + w + 7, y - 2, {
+        color: col, shadow: '#000', align: flip ? 'right' : 'left'
+      });
+    }
+  }
+
   const HUD = {
     draw(ctx, G) {
       const p1 = G.p1, p2 = G.p2;
@@ -88,12 +113,16 @@
       meterBar(ctx, 10, BY + BH + 4, 96, 4, p1.meter / 100, false, p1.meter >= 100);
       meterBar(ctx, N.W - 10 - 96, BY + BH + 4, 96, 4, p2.meter / 100, true, p2.meter >= 100);
 
-      // round pips
+      // character gauges
+      gaugeBar(ctx, 10, BY + BH + 10, 96, 3, p1, false);
+      gaugeBar(ctx, N.W - 10 - 96, BY + BH + 10, 96, 3, p2, true);
+
+      // round pips, flanking the timer
       for (let i = 0; i < N.ROUNDS_TO_WIN; i++) {
         ctx.fillStyle = i < G.wins[0] ? '#fff27a' : '#2b3350';
-        ctx.fillRect(116 + i * 7, BY + 13, 5, 5);
+        ctx.fillRect(162 - i * 7, 15, 5, 5);
         ctx.fillStyle = i < G.wins[1] ? '#fff27a' : '#2b3350';
-        ctx.fillRect(N.W - 121 - i * 7, BY + 13, 5, 5);
+        ctx.fillRect(217 + i * 7, 15, 5, 5);
       }
 
       // timer

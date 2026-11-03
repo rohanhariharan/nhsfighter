@@ -62,17 +62,32 @@ Rounds are best of three, 60 seconds each.
 
 ## Roster
 
-| Fighter | Role | Special |
-|---|---|---|
-| **ADAMYA** | agile — fastest walk, highest jump, light hits | *SHARDS* — two fast projectiles |
-| **AARNAV** | tall reach — longer legs, heavier single hits | *RISE* — invincible rising uppercut |
+| Fighter | Role | Special | Gauge |
+|---|---|---|---|
+| **ADAMYA** | agile — fastest walk, highest jump, light hits | *SHARDS* — two fast projectiles | **FLOW** — next special is free |
+| **AARNAV** | tall reach — longer legs, heavier single hits | *RISE* — invincible rising uppercut | **IRON** — eats one hit, no damage |
+| **ROHAN** | balanced — mid speed, mid range | *RUSH* — armoured charging shoulder | **DODGE** — slips one attack completely |
 
-**ADAMYA** — 96 health, speed 1.95, jump 7.8, weight 0.88, power 0.92, POW 2 / SPD 5 / RNG 4.
-**AARNAV** — 104 health, speed 1.66, jump 7.1, weight 1.02, power 1.04, POW 3 / SPD 3 / RNG 5.
+| | height | health | speed | jump | power | POW/SPD/RNG |
+|---|---|---|---|---|---|---|
+| Adamya | 47 | 96 | 1.95 | 7.8 | 0.92 | 2/5/4 |
+| Rohan | 50 | 100 | 1.78 | 7.4 | 0.98 | 3/4/4 |
+| Aarnav | 55 | 104 | 1.66 | 7.1 | 1.04 | 3/3/5 |
 
-Aarnav is about 8px taller, which is also why he reaches further and gets hit
-higher. Best of three rounds, three stages; the CPU picks either fighter at
-Easy / Normal / Hard.
+Best of three rounds, three stages; the CPU picks any fighter at Easy / Normal / Hard.
+
+### Gauges
+
+Under each fighter's meter is a second, thinner bar — their personal gauge. It
+fills on its own over roughly fifteen seconds and then triggers **once** for
+free, then resets:
+
+- **FLOW** (Adamya) — the next special costs nothing, meter untouched
+- **IRON** (Aarnav) — absorbs one clean hit entirely, no damage or hitstun
+- **DODGE** (Rohan) — slips the next attack, going briefly invulnerable
+
+The gauge only fires on an unblocked hit, so you can't waste IRON or DODGE while
+already holding back.
 
 ---
 
