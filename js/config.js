@@ -86,6 +86,15 @@ window.NHS = window.NHS || {};
       air: true, overhead: true, sfx: 'punch', cost: 0
     },
 
+    /* --- throws --- */
+    throw: {
+      id: 'throw', label: 'THROW', art: 'throw',
+      startup: 5, active: 3, recovery: 22,
+      damage: 10, hitstun: 26, blockstun: 0, kb: 5.0, kbUp: -2.2,
+      grab: true, range: 26, unblockable: true,
+      sfx: 'punch', cost: 0
+    },
+
     /* --- specials (meter gated) --- */
     fireball: {
       id: 'fireball', label: 'WAVE', art: 'cast',
@@ -123,8 +132,9 @@ window.NHS = window.NHS || {};
     }
   };
 
-  /* --- how the FINAL unlocks ---------------------------------- */
-  N.FINAL = {
+  N.DASH = { cost: 15, speed: 2.6, frames: 10, invuln: 8 };
+
+  /* --- how the FINAL unlocks ---------------------------------- */  N.FINAL = {
     roundThreat: true,    // one more loss ends the whole match
     lowHealth: false,     // or: health under lowHealthPct (off by default)
     lowHealthPct: 0.25,

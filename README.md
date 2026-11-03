@@ -42,6 +42,8 @@ Global: `Enter` confirm · `Esc` pause · `M` mute
 | **Up + `Q`** | **Launcher** | uppercut that pops the opponent into the air |
 | Jump + `Q` | **Dive Punch** | fast downward air punch |
 | Jump + `E` | **Dive Kick** | longer-range air kick |
+| Double-tap `A`/`D` | **Dash** | burst of movement, costs 15 meter; backdash has i-frames |
+| `L-Shift` / `R-Shift` | **Throw** | beats block, loses to jumps; 26px range |
 
 Jumps have a 3-frame wind-up, which is what makes `Up + Punch` reliable — press
 up and punch together and you get the launcher instead of a jump.

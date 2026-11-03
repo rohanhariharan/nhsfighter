@@ -169,6 +169,16 @@
       N.Audio.sfx('jump');
     }
 
+    startDash(dir) {
+      const d = N.DASH;
+      if (!d || !this.grounded()) return false;
+      if (this.meter < d.cost) return false;
+      this.meter -= d.cost;
+      this.dashDir = dir;
+      this.setState('dash');
+      return true;
+    }
+
     spawnProjectile(world) {
       const cfg = this.def.proj;
       if (!cfg) return;
@@ -261,7 +271,7 @@
         return 'guard';
       }
 
-      const blocked = this.isBlocking();
+      const blocked = !move.unblockable && this.isBlocking();
 
       // defence buff
       if (this.defMul !== 1) damage = Math.max(1, Math.round(damage * this.defMul));
@@ -489,6 +499,8 @@
 
       if (wantsBlock(f, inp, opp)) return f.setState(inp.down ? 'blockLow' : 'block');
 
+      if (inp.dash && f.startDash(inp.dash)) return;
+      if (inp.grab) return f.startAttack('throw');
       if (inp.special && f.trySpecial()) return;
       if (inp.punch) return f.startAttack('jab');
       if (inp.kick) return f.startAttack('kick');
@@ -507,6 +519,8 @@
     if (!f.canAct()) { f.vx *= 0.8; return; }
     if (wantsBlock(f, inp, opp)) return f.setState(inp.down ? 'blockLow' : 'block');
 
+    if (inp.dash && f.startDash(inp.dash)) return;
+    if (inp.grab) return f.startAttack('throw');
     if (inp.special && f.trySpecial()) return;
     if (inp.punch) return f.startAttack('jab');
     if (inp.kick) return f.startAttack('kick');
@@ -531,6 +545,8 @@
       if (!f.canAct()) return;
       f.vx = 0;
 
+      if (inp.dash && f.startDash(inp.dash)) return;
+      if (inp.grab) return f.startAttack('throw');
       if (inp.special && f.trySpecial()) return;
       if (inp.punch) return f.startAttack('lowJab');
       if (inp.kick) return f.startAttack('sweep');
@@ -582,6 +598,22 @@
     }
   };
 
+  /* --- dash ------------------------------------------------- */
+  STATES.dash = {
+    enter(f) {
+      const d = N.DASH;
+      f.vx = f.dashDir * f.def.speed * (f.speedMul || 1) * d.speed;
+      if (f.dashDir !== f.facing) f.invuln = Math.max(f.invuln, d.invuln);
+      N.Audio.sfx('jump');
+    },
+    update(f) {
+      f.vx *= 0.88;
+      if (f.stateTime > N.DASH.frames) f.toNeutral();
+    },
+    exit(f) { f.vx *= 0.55; }
+  };
+
+  /* --- jumping ---------------------------------------------- */
   STATES.jump = {
     update(f, inp, opp, world) {
       if (!f.canAct()) return;

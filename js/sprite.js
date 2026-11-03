@@ -112,6 +112,12 @@
     handN: [4, -22], handF: [-8, -20]
   })] };
 
+  S.throw = { frames: [P({
+    lean: 3,
+    handN: [19, -30], handF: [16, -27],
+    footN: [7, 0], footF: [-7, 0]
+  })] };
+
   S.punch = { frames: [P({
     lean: 2, handN: [20, -31], handF: [-9, -20]
   })] };
@@ -227,6 +233,7 @@
       case 'block': case 'blockStun': return f.crouchHit ? 'blockLow' : 'block';
       case 'blockLow': return 'blockLow';
       case 'jump': return f.vy < 0 ? 'jumpUp' : 'jumpDown';
+      case 'dash': return f.dashDir === f.facing ? 'rush' : 'walkB';
       case 'attack': return f.move ? f.move.art : 'punch';
       case 'hit': return f.crouchHit ? 'hurtCrouch' : 'hurt';
       case 'hitAir': return 'airHurt';

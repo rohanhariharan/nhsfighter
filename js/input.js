@@ -4,8 +4,8 @@
    special-move motions (down, then forward + attack) work.
    ============================================================ */
 (function (N) {
-  const P1 = { left: 'KeyA', right: 'KeyD', up: 'KeyW', down: 'KeyS', punch: 'KeyQ', kick: 'KeyE' };
-  const P2 = { left: 'KeyJ', right: 'KeyL', up: 'KeyI', down: 'KeyK', punch: 'KeyU', kick: 'KeyO' };
+  const P1 = { left: 'KeyA', right: 'KeyD', up: 'KeyW', down: 'KeyS', punch: 'KeyQ', kick: 'KeyE', grab: 'ShiftLeft' };
+  const P2 = { left: 'KeyJ', right: 'KeyL', up: 'KeyI', down: 'KeyK', punch: 'KeyU', kick: 'KeyO', grab: 'ShiftRight' };
 
   const I = {
     keys: Object.create(null),   // live, written by events
@@ -16,6 +16,8 @@
     maps: [P1, P2],
     hist: [[], []],
     firstKey: false,
+    frame: 0,
+    taps: [{ left: -99, right: -99 }, { left: -99, right: -99 }],
 
     init() {
       window.addEventListener('keydown', (e) => {
@@ -39,6 +41,7 @@
 
     /* call once at the start of every 60Hz tick */
     tick() {
+      this.frame++;
       this.prev = this.cur;
       this.cur = Object.assign(Object.create(null), this.keys);
       this.edge = this.buffer;
@@ -55,6 +58,21 @@
       const m = this.maps[i];
       const left = this.down(m.left);
       const right = this.down(m.right);
+      const leftP = this.press(m.left);
+      const rightP = this.press(m.right);
+
+      // double-tap a direction = dash
+      let dash = 0;
+      const tap = this.taps[i];
+      if (leftP) {
+        if (this.frame - tap.left <= 14) { dash = -1; tap.left = -99; }
+        else tap.left = this.frame;
+      }
+      if (rightP) {
+        if (this.frame - tap.right <= 14) { dash = 1; tap.right = -99; }
+        else tap.right = this.frame;
+      }
+
       const inp = {
         left, right,
         up: this.press(m.up),
@@ -62,9 +80,11 @@
         upHeld: this.down(m.up),
         punch: this.press(m.punch),
         kick: this.press(m.kick),
+        grab: this.press(m.grab),
         punchHeld: this.down(m.punch),
         kickHeld: this.down(m.kick),
-        special: false
+        special: false,
+        dash
       };
 
       const h = this.hist[i];

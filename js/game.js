@@ -134,12 +134,27 @@
     const pairs = [[p1, p2], [p2, p1]];
     for (const [atk, def] of pairs) {
       if (atk.hitstop > 0) continue;
+      const m = atk.move;
+      if (!m || atk.hitDone) continue;
+
+      // throws: range check instead of a hitbox
+      if (m.grab) {
+        if (atk.moveFrame < m.startup || atk.moveFrame >= m.startup + m.active) continue;
+        if (Math.abs(def.x - atk.x) > (m.range || 26)) continue;
+        if (!def.grounded() || def.invuln > 0) continue;
+        if (def.state === 'knockdown' || def.state === 'ko') continue;
+
+        atk.hitDone = true;
+        const gdmg = Math.max(1, Math.round(m.damage * atk.def.power * (atk.atkMul || 1)));
+        def.receive(atk, m, gdmg, w);
+        continue;
+      }
+
       const hb = atk.hitbox();
-      if (!hb || atk.hitDone) continue;
+      if (!hb) continue;
 
       if (overlap(hb, def.hurtbox())) {
         atk.hitDone = true;
-        const m = atk.move;
         atk.hitCount = (atk.hitCount || 0) + 1;
 
         let mv = m;
@@ -543,12 +558,12 @@
     T(ctx, 'HOW TO PLAY', W / 2, 8, { scale: 1, color: '#fff27a', align: 'center', shadow: '#000' });
 
     const col = (x, title, rows, color) => {
-      T(ctx, title, x, 32, { color, shadow: '#000' });
-      let y = 44;
+      T(ctx, title, x, 30, { color, shadow: '#000' });
+      let y = 40;
       for (const r of rows) {
         T(ctx, r[0], x, y, { color: '#8fa0c4' });
         T(ctx, r[1], x + 72, y, { color: '#ffffff' });
-        y += 10;
+        y += 9;
       }
     };
 
@@ -558,6 +573,7 @@
       ['CROUCH', 'S'],
       ['PUNCH', 'Q'],
       ['KICK', 'E'],
+      ['THROW', 'L-SHIFT'],
       ['BLOCK', 'HOLD BACK']
     ], '#59d7ff');
 
@@ -567,38 +583,40 @@
       ['CROUCH', 'K'],
       ['PUNCH', 'U'],
       ['KICK', 'O'],
+      ['THROW', 'R-SHIFT'],
       ['BLOCK', 'HOLD BACK']
     ], '#c77dff');
 
-    rect(12, 106, 360, 1, '#1b2036');
+    rect(12, 104, 360, 1, '#1b2036');
 
-    T(ctx, 'TILTS', 14, 113, { color: '#fff27a', shadow: '#000' });
+    T(ctx, 'TILTS', 14, 110, { color: '#fff27a', shadow: '#000' });
     const tilt = [
       ['UP + PUNCH', 'LAUNCHER'],
       ['DOWN + PUNCH', 'LOW JAB'],
       ['DOWN + KICK', 'SWEEP'],
       ['JUMP + PUNCH', 'DIVE PUNCH'],
-      ['JUMP + KICK', 'DIVE KICK']
+      ['JUMP + KICK', 'DIVE KICK'],
+      ['DBL-TAP', 'DASH 15 MTR']
     ];
-    let y = 124;
+    let y = 120;
     for (const t of tilt) {
       T(ctx, t[0], 14, y, { color: '#8fa0c4' });
       T(ctx, t[1], 96, y, { color: '#ffffff' });
       y += 9;
     }
 
-    T(ctx, 'SPECIALS', 206, 113, { color: '#fff27a', shadow: '#000' });
-    T(ctx, 'DOWN, FWD + ATTACK', 206, 124, { color: '#ffffff' });
-    T(ctx, 'OR PUNCH + KICK', 206, 133, { color: '#5b6b8c' });
-    T(ctx, 'COSTS 40 METER', 206, 142, { color: '#5b6b8c' });
-    T(ctx, 'FINAL', 206, 154, { color: '#ff4fd8', shadow: '#000' });
-    T(ctx, 'FULL BAR + LAST ROUND', 206, 163, { color: '#ffffff' });
-    T(ctx, 'SAME INPUT, WHOLE BAR', 206, 172, { color: '#5b6b8c' });
+    T(ctx, 'SPECIALS', 206, 110, { color: '#fff27a', shadow: '#000' });
+    T(ctx, 'DOWN, FWD + ATTACK', 206, 120, { color: '#ffffff' });
+    T(ctx, 'OR PUNCH + KICK', 206, 129, { color: '#5b6b8c' });
+    T(ctx, 'COSTS 40 METER', 206, 138, { color: '#5b6b8c' });
+    T(ctx, 'FINAL', 206, 147, { color: '#ff4fd8', shadow: '#000' });
+    T(ctx, 'FULL BAR + LAST ROUND', 206, 156, { color: '#ffffff' });
+    T(ctx, 'SAME INPUT, WHOLE BAR', 206, 165, { color: '#5b6b8c' });
 
-    T(ctx, 'FIRST TO 2 ROUNDS WINS', 14, 176, { color: '#3d4a63' });
+    T(ctx, 'FIRST TO 2 ROUNDS WINS', 14, 180, { color: '#3d4a63' });
 
     const blink = Math.floor(G.t / 24) % 2 === 0;
-    if (blink) T(ctx, 'PRESS ENTER', W / 2, 198, { color: '#5b6b8c', align: 'center' });
+    if (blink) T(ctx, 'PRESS ENTER', W / 2, 200, { color: '#5b6b8c', align: 'center' });
   }
 
   /* ------------------------------------------------------------
