@@ -1,5 +1,7 @@
 # NHS FIGHTER
 
+**Play it: https://rohanhariharan.github.io/nhsfighter/**
+
 An 8-bit style 1-on-1 fighting game that runs in the browser. No build step, no
 dependencies, no image or audio files — every fighter, stage, effect and sound is
 generated in code.
