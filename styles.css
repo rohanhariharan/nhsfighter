@@ -33,7 +33,7 @@ body{
     rgba(0,0,0,.16) 0px,
     rgba(0,0,0,.16) 1px,
     rgba(0,0,0,0) 1px,
-    rgba(0,0,0,0) 3px
+    rgba(0,0,0,0) var(--scan, 3px)
   );
   mix-blend-mode:multiply;
   opacity:.55;

@@ -179,6 +179,7 @@ function in `js/stages.js`.
 ## Notes
 
 - Fixed 60 Hz simulation with an accumulator, so frame data is deterministic.
-- Rendering is at 384×216 and integer-scaled with nearest-neighbour filtering,
-  which is where the chunky look comes from.
+- Rendering is at 384×216 and scaled to fill the window with nearest-neighbour
+  filtering — snapping to a whole-number scale when it's close, which is where
+  the chunky look comes from.
 - No external requests: works offline and from `file://`.

@@ -962,13 +962,22 @@
      boot
      ------------------------------------------------------------ */
   function resize() {
-    const pad = 60;
-    const s = Math.max(1, Math.min(
-      Math.floor(window.innerWidth / W),
-      Math.floor((window.innerHeight - pad) / H)
-    ));
-    canvas.style.width = W * s + 'px';
-    canvas.style.height = H * s + 'px';
+    const hint = 34;                 // room for the key hint bar
+    const pad = 8;
+    const availW = Math.max(200, window.innerWidth - pad * 2);
+    const availH = Math.max(140, window.innerHeight - hint);
+
+    // fill the window, but prefer a whole-number scale when it's close
+    let s = Math.min(availW / W, availH / H);
+    const whole = Math.floor(s);
+    if (whole >= 1 && s - whole < 0.12) s = whole;
+
+    canvas.style.width = Math.round(W * s) + 'px';
+    canvas.style.height = Math.round(H * s) + 'px';
+
+    // keep the CRT scanlines in step with the pixel grid
+    const wrap = document.getElementById('wrap');
+    if (wrap) wrap.style.setProperty('--scan', Math.max(2, Math.round(s * 2)) + 'px');
   }
 
   N.Input.init();
