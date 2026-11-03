@@ -79,6 +79,17 @@ Rounds are best of three, 60 seconds each.
 
 Best of three rounds, three stages; the CPU picks any fighter at Easy / Normal / Hard.
 
+### Guard shield
+
+The round dial with a shield in the middle — hanging off the end of your energy
+bar — is your guard. Every **blocked** hit costs shield (22, or 40 for a special).
+Run it to zero and you **guard break**: a 40-frame stagger, and until it refills
+you cannot block at all. Holding back just walks you backwards and hits land at
+full damage.
+
+It comes back to full over **2 seconds**, but only after **5 seconds without
+being hit** — so a patient opponent can starve you out of your defence.
+
 ### Abilities
 
 Under each fighter's meter is a thinner, four-segment bar — their personal

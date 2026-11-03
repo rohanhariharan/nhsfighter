@@ -90,7 +90,7 @@ window.NHS = window.NHS || {};
     throw: {
       id: 'throw', label: 'THROW', art: 'throw',
       startup: 5, active: 3, recovery: 22,
-      damage: 10, hitstun: 26, blockstun: 0, kb: 5.0, kbUp: -2.2,
+      damage: 6, hitstun: 26, blockstun: 0, kb: 5.0, kbUp: -2.2,
       grab: true, range: 26, unblockable: true,
       sfx: 'punch', cost: 0
     },
@@ -132,7 +132,16 @@ window.NHS = window.NHS || {};
     }
   };
 
-  N.DASH = { cost: 15, speed: 2.6, frames: 10, invuln: 8 };
+  N.DASH = { cost: 15, speed: 3.2, frames: 12, invuln: 8 };
+
+  /* --- guard shield --- */
+  N.SHIELD = {
+    max: 100,
+    blockCost: 22,      // per blocked hit
+    specialCost: 40,    // per blocked special
+    quiet: 300,         // frames without being hit before it refills
+    refill: 120         // frames to go from empty to full
+  };
 
   /* --- how the FINAL unlocks ---------------------------------- */  N.FINAL = {
     roundThreat: true,    // one more loss ends the whole match

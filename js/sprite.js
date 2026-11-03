@@ -231,6 +231,7 @@
       case 'crouch': return 'crouch';
       case 'prejump': return 'prejump';
       case 'block': case 'blockStun': return f.crouchHit ? 'blockLow' : 'block';
+      case 'guardBreak': return 'hurt';
       case 'blockLow': return 'blockLow';
       case 'jump': return f.vy < 0 ? 'jumpUp' : 'jumpDown';
       case 'dash': return f.dashDir === f.facing ? 'rush' : 'walkB';

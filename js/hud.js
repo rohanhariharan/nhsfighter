@@ -197,7 +197,7 @@
     for (let i = 1; i < 4; i++) ctx.fillRect(bx + Math.round((W * i) / 4), y, 1, H);
 
     if (f.gaugeReady) {
-      T(ctx, g.name, flip ? bx - 7 : bx + W + 7, y - 2, {
+      T(ctx, g.name, flip ? bx + W : bx, y + 7, {
         color: col, shadow: '#000', align: flip ? 'right' : 'left'
       });
     }
@@ -209,6 +209,37 @@
       N.Icon.drawBuff(ctx, b.kind, flip ? x - 10 - i * 11 : x + i * 11, y);
       if (++i >= 4) break;
     }
+  }
+
+  function shieldDial(ctx, cx, cy, r, f) {
+    const pct = Math.max(0, Math.min(1, f.shield / N.SHIELD.max));
+    const broken = f.shield <= 0;
+    const low = pct < 0.35;
+
+    ctx.fillStyle = '#07080f';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#0b1120';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = broken ? '#3a1620' : '#171d2e';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r - 1.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    if (pct > 0.01) {
+      ctx.strokeStyle = broken ? '#ff5f6d' : (low ? '#ffd166' : '#7fd0ff');
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - 1.5, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct);
+      ctx.stroke();
+    }
+
+    N.Icon.draw(ctx, 'guard', cx - 4, cy - 4, broken ? '#ff5f6d' : '#dfe9ff');
   }
 
   const HUD = {
@@ -237,6 +268,10 @@
       // character gauges
       gaugeBar(ctx, 10, BY + BH + 12, p1, false);
       gaugeBar(ctx, N.W - 10, BY + BH + 12, p2, true);
+
+      // guard shield dials, hanging off the end of the energy bar
+      shieldDial(ctx, 113, BY + BH + 9, 8, p1);
+      shieldDial(ctx, N.W - 113, BY + BH + 9, 8, p2);
 
       // round pips, flanking the timer
       for (let i = 0; i < N.ROUNDS_TO_WIN; i++) {

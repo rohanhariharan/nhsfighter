@@ -58,6 +58,8 @@
       this.gauge = 0;
       this.gaugeReady = false;
       this.dodgeT = 0;
+      this.shield = N.SHIELD.max;
+      this.sinceHit = 9999;
       this.buffs = [];
       this.atkMul = 1;
       this.defMul = 1;
@@ -292,9 +294,22 @@
           kind: 'block', t: 0, life: 12
         });
         N.Audio.sfx('block');
+
+        // guard shield
+        this.sinceHit = 0;
+        this.shield -= move.special ? N.SHIELD.specialCost : N.SHIELD.blockCost;
+        if (this.shield <= 0) {
+          this.shield = 0;
+          this.setState('guardBreak');
+          this.hitTimer = 40;
+          world.shake = Math.max(world.shake, 3);
+          world.sparks.push({ x: this.x, y: this.y - 34, kind: 'hit', t: 0, life: 16 });
+          N.Audio.sfx('guard');
+        }
       } else {
         this.health = Math.max(0, this.health - damage);
         this.flash = 3;
+        this.sinceHit = 0;
         this.crouchHit = (this.state === 'crouch');
 
         this.vx = -this.facing * (move.kb || 1.5);
@@ -387,6 +402,12 @@
         this.gaugeReady = this.gauge >= (gk === 'dodge' ? 25 : 100);
       }
       if (this.dodgeT > 0) this.dodgeT--;
+
+      // guard shield: refills 5s after the last hit, over 2s
+      this.sinceHit++;
+      if (this.shield < N.SHIELD.max && this.sinceHit > N.SHIELD.quiet) {
+        this.shield = Math.min(N.SHIELD.max, this.shield + N.SHIELD.max / N.SHIELD.refill);
+      }
 
       // buff timers
       for (let i = this.buffs.length - 1; i >= 0; i--) {
@@ -488,7 +509,7 @@
   }
 
   function wantsBlock(f, inp, opp) {
-    return backHeld(f, inp) && opp && opp.threatens(f);
+    return f.shield > 0 && backHeld(f, inp) && opp && opp.threatens(f);
   }
 
   /* --- idle ------------------------------------------------ */
@@ -712,6 +733,13 @@
     update(f) {
       f.vx *= 0.8;
       if (--f.hitTimer <= 0) f.toNeutral();
+    }
+  };
+
+  STATES.guardBreak = {
+    enter(f) { f.vx *= 0.4; },
+    update(f) {
+      if (f.stateTime > 40) f.toNeutral();
     }
   };
 

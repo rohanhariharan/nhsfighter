@@ -84,6 +84,10 @@
           this.tone(880, 0.05, 'square', 0.12, 620);
           this.noise(0.04, 0.08);
           break;
+        case 'guard':
+          this.tone(420, 0.26, 'sawtooth', 0.2, 80);
+          this.noise(0.12, 0.14);
+          break;
         case 'whiff':
           this.noise(0.06, 0.05);
           break;
