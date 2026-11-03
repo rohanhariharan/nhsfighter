@@ -29,6 +29,7 @@ python3 -m http.server 8000
 | Crouch | `S` | `K` |
 | Punch | `Q` | `U` |
 | Kick | `E` | `O` |
+| Throw | `L-Shift` | `R-Shift` |
 | Block | hold **back** (away from the opponent) | hold **back** |
 
 Global: `Enter` confirm · `Esc` pause · `M` mute
