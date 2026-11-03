@@ -778,6 +778,29 @@
   /* ------------------------------------------------------------
      render — fight
      ------------------------------------------------------------ */
+  function triFill(ctx, cx, y, w, color) {
+    ctx.fillStyle = color;
+    const rows = Math.ceil(w / 2);
+    for (let i = 0; i < rows; i++) {
+      const ww = w - i * 2;
+      if (ww <= 0) break;
+      ctx.fillRect(Math.round(cx - ww / 2), y + i, ww, 1);
+    }
+  }
+
+  /** little pointer above a fighter showing who controls them */
+  function drawMarker(ctx, f, label, color, t) {
+    if (!f) return;
+    const x = Math.round(f.x);
+    const bob = Math.round(Math.sin((t + (f.index || 0) * 30) * 0.08) * 1.5);
+    const headTop = Math.round(f.y - (f.def.hurtH || 51));
+    const y = headTop - 10 + bob;
+
+    triFill(ctx, x, y - 1, 9, '#07080f');
+    triFill(ctx, x, y, 7, color);
+    T(ctx, label, x, y - 11, { color, align: 'center', shadow: '#000' });
+  }
+
   function drawFight() {
     const w = G.world;
 
@@ -796,6 +819,10 @@
       N.Art.drawShadow(ctx, G.p1);
       N.Art.drawStick(ctx, G.p2);
       N.Art.drawStick(ctx, G.p1);
+
+      drawMarker(ctx, G.p1, 'P1', '#59d7ff', G.t);
+      drawMarker(ctx, G.p2, G.mode === 'cpu' ? 'CPU' : 'P2',
+        G.mode === 'cpu' ? '#ff7a3d' : '#c77dff', G.t);
     }
 
     if (w) {
